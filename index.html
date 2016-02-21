@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head profile="http://www.w3.org/2005/10/profile">
+    <title>Phoenix Arcade Shooter</title>
+
+    <link rel="stylesheet" type="text/css" href="styles/game.css"/>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        varying lowp vec4 vColor;
+        
+        void main(void) {
+            gl_FragColor = vColor;
+        }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        attribute vec4 aVertexColor;
+        
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        
+        varying lowp vec4 vColor;
+        
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vColor = aVertexColor;
+        }
+    </script>
+
+</head>
+<body>
+
+<canvas id="glcanvas" width="800" height="600">
+    Your browser doesn't appear to support the
+    <code>&lt;canvas&gt;</code> element.
+</canvas>
+
+<script src="libs/sylvester.js"></script>
+<script src="libs/sylvester-addons.js"></script>
+<script src="modules.js"></script>
+<script src="src/utils/timer.js"></script>
+<script src="src/demo.js"></script>
+<script src="src/gfx.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
