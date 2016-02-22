@@ -3,7 +3,8 @@ DefineModule('main', function (require) {
     var Demo = require('demo');
 
     var gfx = new Gfx();
-    console.log(gfx);
+    var demo = new Demo(gfx);
+    demo.run();
 
     // runLoop.addCallback(function (dtime) {
     // });

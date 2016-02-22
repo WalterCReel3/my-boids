@@ -1,9 +1,63 @@
 DefineModule('gfx', function (require) {
+
+    var Model = DefineClass({
+        constructor: function () {
+            this.load = false;
+            this.vertexBuffer = null;
+            this.colorBuffer = null;
+            this.indexBuffer = null;
+        },
+
+        loadModel: function (gl) {
+            var vertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, model.getVertices(), gl.STATIC_DRAW);
+
+            var colorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, model.getColors(), gl.STATIC_DRAW);
+
+            var indexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, model.getIndices(), gl.STATIC_DRAW);
+
+            this.vertexBuffer = vertexBuffer;
+            this.colorBuffer = colorBuffer;
+            this.indexBuffer = indexBuffer;
+            this.loaded = true;
+        }
+
+        getVertices: function () {
+            return new Float32Array(this.vertices);
+        },
+
+        getColors: function () {
+            return new Float32Array(this.colors);
+        }
+    });
+
+
+    var MeshManager = DefineClass({
+        constructor: function (gfx) {
+            this.gfx = gfx;
+            this.models = {};
+        },
+
+        loaded: function(name) {
+            return (name in this.models);
+        },
+
+        get: function(name) {
+            return this.models[name];
+        }
+    });
+
     return DefineClass({
         constructor: function Gfx(option) {
             this.canvas = this.makeCanvas();
             this.gl = this.makeGlContext(this.canvas);
             this.initGL();
+            this.meshManager = new MeshManager(this);
         },
 
         makeCanvas: function() {
@@ -36,10 +90,6 @@ DefineModule('gfx', function (require) {
             // Initialize the shaders; this is where all the lighting for the
             // vertices and so forth is established.
             this.initShaders();
-
-            // Here's where we call the routine that builds all the objects
-            // we'll be drawing.
-            // this.initBuffers();
 
             // Set up to draw the scene periodically.
             // function animFrame() {
@@ -121,7 +171,12 @@ DefineModule('gfx', function (require) {
             gl.enableVertexAttribArray(vertexColorAttribute);
         },
 
-        initBuffers: function() {
+        loadModel: function(name, model) {
+            if (this.meshManager.loaded(name)) {
+                return this.meshManager.get(name);
+            }
+            model.load(this.gl);
+            this.meshManager.add(name, model);
         }
     });
 });
